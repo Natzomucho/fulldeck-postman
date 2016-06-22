@@ -1,0 +1,373 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Cards Autotest",
+		"_postman_id": "6b7c668d-90fc-5740-1026-b6166a70da52",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Demo Keys",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "// Get the JSON response data\nvar j = JSON.parse(responseBody);\n\n// Did we even get any demo Keys?\nif (j.demoKeys) {\n    var demoKeys = j.demoKeys;\n    if(demoKeys.length === 4) {\n        tests[\"There are 4 keys\"] = true;\n        // Store the demo keys in the session for easy access\n        postman.setEnvironmentVariable(\"demoKeys\", demoKeys);\n        \n\n        // Test for valid player1 key\n        var player = _.find(demoKeys, {'alias': 'player1'});\n        {\n            if(player.publicKey && player.privateKey) {\n                tests[\"player1 public/private keys exist\"] = true;\n                postman.setEnvironmentVariable(\"player1\", JSON.stringify(player));\n            } else {\n                tests[\"player1 public/private keys exist\"] = false;\n            }\n        }\n        \n        // Test for valid player2 key\n        player = _.find(demoKeys, {'alias': 'player2'});\n        {\n            if(player.publicKey && player.privateKey) {\n                tests[\"player2 public/private keys exist\"] = true;\n                postman.setEnvironmentVariable(\"player2\", JSON.stringify(player));\n            } else {\n                tests[\"player2 public/private keys exist\"] = false;\n            }\n        }\n        \n        // Test for valid player3 key\n        player = _.find(demoKeys, {'alias': 'player3'});\n        {\n            if(player.publicKey && player.privateKey) {\n                tests[\"player3 public/private keys exist\"] = true;\n                postman.setEnvironmentVariable(\"player3\", JSON.stringify(player));\n            } else {\n                tests[\"player3 public/private keys exist\"] = false;\n            }\n        }\n        \n        // Test for valid player3 key\n        player = _.find(demoKeys, {'alias': 'player4'});\n        {\n            if(player.publicKey && player.privateKey) {\n                tests[\"player4 public/private keys exist\"] = true;\n                postman.setEnvironmentVariable(\"player4\", JSON.stringify(player));\n            } else {\n                tests[\"player4 public/private keys exist\"] = false;\n            }\n        }\n        \n        // Test for valid player2 key\n        \n        \n        \n        \n    } else {\n        tests[\"There are 4 keys\"] = false;\n    }\n}\nelse {\n  tests[\"Demo Keys provided\"] = false;\n}\n\n\n"
+					}
+				}
+			],
+			"request": {
+				"url": "{{apiserver}}/api/demo/playerKeys",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept-Language",
+						"value": "en_US",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"genderId\": 1,\n    \"email\": \"testuser-{{uniq}}@example.com\",\n    \"firstname\": \"John-{{uniq}}\",\n    \"lastname\": \"Doe-{{uniq}}\",\n    \"passwd\": \"thebouqs\",\n    \"newsletter\": false,\n    \"postcode\": \"90014\",\n    \"birthday\": \"1968-05-20\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get Signed Shoe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "// Get the JSON response data\nvar j = JSON.parse(responseBody);\n\npostman.setEnvironmentVariable(\"shoe\", JSON.stringify(j));\n\n// shoeId\nif(j.shoeId) {\n    tests[\"shoeId exists\"] = true;    \n} else {\n    tests[\"shoeId exists\"] = false;\n}\n\n// Request Sig\nif(j.requestSig) {\n    tests[\"requestSig exists\"] = true;    \n} else {\n    tests[\"requestSig exists\"] = false;\n}\n\n// Shared\nif(j.shared) {\n    tests[\"shared exists\"] = true;    \n} else {\n    tests[\"shared exists\"] = false;\n}\n\n// Shared.iv\nif(j.shared.iv) {\n    tests[\"Shared IV exists\"] = true;    \n} else {\n    tests[\"Shared IV exists\"] = false;\n}\n\n// Shared.crypted\nif(j.shared.crypted) {\n    tests[\"Share encrypted data exists\"] = true;    \n} else {\n    tests[\"Share encrypted data exists\"] = false;\n}\n\n// Secrets\nif(j.secrets) {\n    tests[\"Secrets returned\"] = true;    \n} else {\n    tests[\"Secrets returned\"] = false;\n}\n\n\n// Sigs\nif(j.sig) {\n    tests[\"Shoe is properly signed by FD\"] = true;    \n} else {\n    tests[\"Shoe is properly signed by FD\"] = false;\n}"
+					}
+				}
+			],
+			"request": {
+				"url": "{{apiserver}}/api/shoe",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"numDecks\": 1,\n    \"deckDefinition\": {\n        \"suits\": [\"H\",\"C\",\"D\",\"S\"],\n        \"ranks\": [\"A\",\"2\",\"3\",\"4\"],\n        \"jokers\": 0\n    },\n    \"publicKeys\": [\n    {\n      \"alias\": \"player1\",\n      \"publicKey\": \"LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlHZk1BMEdDU3FHU0liM0RRRUJBUVVBQTRHTkFEQ0JpUUtCZ1FDazlvNHdCZmtWdEtqdko1TlpGTE00NURuTApYdmx5d1JZelhNNmxQZTEwc1B5MkQvTFZKUXVTVXM5QitCTDAvL0VxaWlwVGZEZjJmT252bWNSa2JhL2Q4YllMCjgvdXVaOFc3QjJhSlVwUElkWVZGUSszWFJGWHl6TXppMUJ0ZTV6YUNxL0xXamJtaEF0d3pyNU1PK3owVDZjczgKb0RJckdZSFkrdEVadUI1RGN3SURBUUFCCi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=\"\n    },\n    {\n      \"alias\": \"player2\",\n      \"publicKey\": \"LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlHZk1BMEdDU3FHU0liM0RRRUJBUVVBQTRHTkFEQ0JpUUtCZ1FEa2I3eVhmbEVXaUlzQ3NNN2VPL2FMV1g2Uwp6UzZ5bEJ5M2k5eEFiRHRjT2dqRklhVGpYdldYT3JTOGk0eVI4NE1vclp2WGdQRzlXUXJMaHUyQ0QxaFhVYTZBCkRISEJGSExYTndGRTcxNTNSUUhhQyt3a254eWp4OFlLajJhSEI2WkEwd0tHL3ZyVkpMTWZhU1M1Y2kySWNQU0oKdkN1MGpMb2lHTjQ5YkZJSllRSURBUUFCCi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=\"\n    },\n    {\n      \"alias\": \"player3\",\n      \"publicKey\": \"LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlHZk1BMEdDU3FHU0liM0RRRUJBUVVBQTRHTkFEQ0JpUUtCZ1FDZEFzRTBoc3BUT3ZJWktFMHdpeWt5VWtNYwpPdVVTRlJnZkdTYTUwbVJ6emxiTGE3Tjg3VmlIWFhvdGZIQjNHL3N2ZTBvdUcxUkUzc1dMRmNoVHVpZEVaN3BMCjZpWFZnekFQeTlMY2J4Sy82V2ZIbnlnVUlCdDJseE9TUGVrN0hsY2RJMW9RVzBrUnZwMjlpNEcvSFg3clVlcloKd05mWDRoODJYSEo1d2ZVbHR3SURBUUFCCi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=\"\n    },\n    {\n      \"alias\": \"player4\",\n      \"publicKey\": \"LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlHZk1BMEdDU3FHU0liM0RRRUJBUVVBQTRHTkFEQ0JpUUtCZ1FEWDJZb0djZXFkeDZWeFhRZHVvcnI4ZU1jRwpWandyTEhjSWdQbzI5WWtHVndYWnZ4UEh1eGpIeUZQUHpWcEJueER5M2xCdG5RUithczF3RytueHhJNXk2T2k4CjFzcU5FNGZsazBZT3ZpRTJvVjl0RGIxT1VxNXdlWTFrTmxmQ3Q4NTNJOW1ta3JTRG44ckhOZVRyREN3a0laaXAKdWlVUnA2QTFOOFVIS0N3OFRRSURBUUFCCi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=\"\n    }\n  ]\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Verify a Signed Shoe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "var j = JSON.parse(responseBody);\ntests[\"Shoe verified\"] = j.verified === true;"
+					}
+				}
+			],
+			"request": {
+				"url": "{{apiserver}}/api/demo/shoe/verify",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{shoe}}"
+				},
+				"description": ""
+			},
+			"response": [
+				{
+					"name": "Private key",
+					"originalRequest": {
+						"url": "{{apiserver}}/api/demo/base64/decode",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"string\": \"LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlDWEFJQkFBS0JnUUNwZk02UnM2TldSaHNIRTExOTA4MzM0aHNDSHU4V2RyeXpuRVhSdUdHcGdHR252UU4rCmh1K0M1dnFMWWdtNEpYQTRRSE56TWZuQmJwMlY4Qlg3d3dYYlVOVmp2c3JMOHpicVo1K0dPdTJCMkg2WGRNbjUKVzYzRi9RaWlTcGdLdDU1OHNYRVhJT2VKc0c0WC90NDRvTWVyL0ptVHdVRVM3OU1FYU1LZnhlbmtWd0lEQVFBQgpBb0dBRzBBRzBtUklpYkdCM1BSZkhzRDBKN3ZCemVoOVZtWkcxclgwZjlDZVd5dGFDQ2NhcmJneVFDQzAvYjRJCmhBUDQ5QUpnelkrbWNWUkFuLy9XK1FDVkt6ZmZabVp4cjBlTUw2U0xhemt3WXlXL3lUZDFHSGdMTHUyS3NnaCsKWGdTamdPcHpEQ2FmQ1c3dGd1eU5ocVZtU0lKaldkUkFJQ2RWYVpFTU1HK2o0YWtDUVFEWVRuZGQ3c1RnWGFmMQpLMXNSMVdtOUFDdnVETzZKMHhUUGtCcXRzdlUvYzdjKy9DNSt2Sjg3cEc1VGFtd2JxZzNyWW5MWk5rZGZaS0hxCkZMQlJEVWVsQWtFQXlKYm5MdFZVTG0vV1kxRDRaSTNrNDdhZHNMYVUzTXV0b3g0MXdkelYxdnFuTFI1ZzRSQlAKcGF2YklpdzRVZm5JdHF1RnNYT2VwNzJ2NmJUUzBRR2JTd0pBT2tIdjdsR25udEk2c1ZLTEJhT1lCZnBzMm9HTApJWDNEWmgvbXY0K3FjL3VEaUNnOWtZN1Z5Q2VDTzE4M1hNQVJYYXMzU1g5UCs4Wkx3Wkx1NWZXUXJRSkFGODVoCkRadmY2OHIySkw5ZFc0SERvb3J2MkNNek02a3dxR1ZUZC9pZm9HNExIVDIzdmI1VDFaTzU1Q3BmWE10S1dQT3UKWUVzYWowbmg4TmkzRkhzZVZRSkJBSURiRkU5K0dIWFVsTWNoNG5QZ3daQUY1Vm0xWTFqOElXa2x3YTRWblFTWgpiaHhNbE5mSzd2QkFYSnY3QnZyUnZRQkw5blhIS21Qd0xKT0xiaEl0MVJ3PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=\"\n}"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "html",
+					"_postman_previewtype": "html",
+					"header": [
+						{
+							"name": "Connection",
+							"key": "Connection",
+							"value": "keep-alive",
+							"description": ""
+						},
+						{
+							"name": "Content-Length",
+							"key": "Content-Length",
+							"value": "887",
+							"description": ""
+						},
+						{
+							"name": "Content-Type",
+							"key": "Content-Type",
+							"value": "text/plain; charset=utf-8",
+							"description": ""
+						},
+						{
+							"name": "Date",
+							"key": "Date",
+							"value": "Mon, 20 Jun 2016 06:32:33 GMT",
+							"description": ""
+						}
+					],
+					"cookie": [],
+					"responseTime": 32,
+					"body": "-----BEGIN RSA PRIVATE KEY-----\nMIICXAIBAAKBgQCpfM6Rs6NWRhsHE11908334hsCHu8WdryznEXRuGGpgGGnvQN+\nhu+C5vqLYgm4JXA4QHNzMfnBbp2V8BX7wwXbUNVjvsrL8zbqZ5+GOu2B2H6XdMn5\nW63F/QiiSpgKt558sXEXIOeJsG4X/t44oMer/JmTwUES79MEaMKfxenkVwIDAQAB\nAoGAG0AG0mRIibGB3PRfHsD0J7vBzeh9VmZG1rX0f9CeWytaCCcarbgyQCC0/b4I\nhAP49AJgzY+mcVRAn//W+QCVKzffZmZxr0eML6SLazkwYyW/yTd1GHgLLu2Ksgh+\nXgSjgOpzDCafCW7tguyNhqVmSIJjWdRAICdVaZEMMG+j4akCQQDYTndd7sTgXaf1\nK1sR1Wm9ACvuDO6J0xTPkBqtsvU/c7c+/C5+vJ87pG5Tamwbqg3rYnLZNkdfZKHq\nFLBRDUelAkEAyJbnLtVULm/WY1D4ZI3k47adsLaU3Mutox41wdzV1vqnLR5g4RBP\npavbIiw4UfnItquFsXOep72v6bTS0QGbSwJAOkHv7lGnntI6sVKLBaOYBfps2oGL\nIX3DZh/mv4+qc/uDiCg9kY7VyCeCO183XMARXas3SX9P+8ZLwZLu5fWQrQJAF85h\nDZvf68r2JL9dW4HDoorv2CMzM6kwqGVTd/ifoG4LHT23vb5T1ZO55CpfXMtKWPOu\nYEsaj0nh8Ni3FHseVQJBAIDbFE9+GHXUlMch4nPgwZAF5Vm1Y1j8IWklwa4VnQSZ\nbhxMlNfK7vBAXJv7BvrRvQBL9nXHKmPwLJOLbhIt1Rw=\n-----END RSA PRIVATE KEY-----\n"
+				}
+			]
+		},
+		{
+			"name": "PPK Decrypt the sharedSecret for Player1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "// get JSON response data as variable j\nvar j = JSON.parse(responseBody);\n\nvar sharedSecret = j.decrypted;\n\n// If there is a decrypted element we use thata s the sharedSecret\nif(sharedSecret) {\n    postman.setEnvironmentVariable(\"sharedSecret\", sharedSecret);  \n    tests[\"Decrypt sharedSecret\"] = true;\n} else {\n    tests[\"Decrypt sharedSecret\"] = false;    \n}\n\n\n"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": "// Get the player1 Private Key\nvar player = JSON.parse(environment['player1']);\npostman.setEnvironmentVariable(\"privateKey\", player.privateKey);\n\n// Get the crypted message for player1\nvar shoe = JSON.parse(environment['shoe']);\npostman.setEnvironmentVariable(\"crypted\", shoe.secrets.player1[0]);\n\n"
+					}
+				}
+			],
+			"request": {
+				"url": "{{apiserver}}/api/demo/ppk/decrypt",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"privateKey\": \"{{privateKey}}\",\n    \"crypted\": \"{{crypted}}\"\n}"
+				},
+				"description": ""
+			},
+			"response": [
+				{
+					"name": "Private key",
+					"originalRequest": {
+						"url": "{{apiserver}}/api/demo/base64/decode",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"string\": \"LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlDWEFJQkFBS0JnUUNwZk02UnM2TldSaHNIRTExOTA4MzM0aHNDSHU4V2RyeXpuRVhSdUdHcGdHR252UU4rCmh1K0M1dnFMWWdtNEpYQTRRSE56TWZuQmJwMlY4Qlg3d3dYYlVOVmp2c3JMOHpicVo1K0dPdTJCMkg2WGRNbjUKVzYzRi9RaWlTcGdLdDU1OHNYRVhJT2VKc0c0WC90NDRvTWVyL0ptVHdVRVM3OU1FYU1LZnhlbmtWd0lEQVFBQgpBb0dBRzBBRzBtUklpYkdCM1BSZkhzRDBKN3ZCemVoOVZtWkcxclgwZjlDZVd5dGFDQ2NhcmJneVFDQzAvYjRJCmhBUDQ5QUpnelkrbWNWUkFuLy9XK1FDVkt6ZmZabVp4cjBlTUw2U0xhemt3WXlXL3lUZDFHSGdMTHUyS3NnaCsKWGdTamdPcHpEQ2FmQ1c3dGd1eU5ocVZtU0lKaldkUkFJQ2RWYVpFTU1HK2o0YWtDUVFEWVRuZGQ3c1RnWGFmMQpLMXNSMVdtOUFDdnVETzZKMHhUUGtCcXRzdlUvYzdjKy9DNSt2Sjg3cEc1VGFtd2JxZzNyWW5MWk5rZGZaS0hxCkZMQlJEVWVsQWtFQXlKYm5MdFZVTG0vV1kxRDRaSTNrNDdhZHNMYVUzTXV0b3g0MXdkelYxdnFuTFI1ZzRSQlAKcGF2YklpdzRVZm5JdHF1RnNYT2VwNzJ2NmJUUzBRR2JTd0pBT2tIdjdsR25udEk2c1ZLTEJhT1lCZnBzMm9HTApJWDNEWmgvbXY0K3FjL3VEaUNnOWtZN1Z5Q2VDTzE4M1hNQVJYYXMzU1g5UCs4Wkx3Wkx1NWZXUXJRSkFGODVoCkRadmY2OHIySkw5ZFc0SERvb3J2MkNNek02a3dxR1ZUZC9pZm9HNExIVDIzdmI1VDFaTzU1Q3BmWE10S1dQT3UKWUVzYWowbmg4TmkzRkhzZVZRSkJBSURiRkU5K0dIWFVsTWNoNG5QZ3daQUY1Vm0xWTFqOElXa2x3YTRWblFTWgpiaHhNbE5mSzd2QkFYSnY3QnZyUnZRQkw5blhIS21Qd0xKT0xiaEl0MVJ3PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=\"\n}"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "html",
+					"_postman_previewtype": "html",
+					"header": [
+						{
+							"name": "Connection",
+							"key": "Connection",
+							"value": "keep-alive",
+							"description": ""
+						},
+						{
+							"name": "Content-Length",
+							"key": "Content-Length",
+							"value": "887",
+							"description": ""
+						},
+						{
+							"name": "Content-Type",
+							"key": "Content-Type",
+							"value": "text/plain; charset=utf-8",
+							"description": ""
+						},
+						{
+							"name": "Date",
+							"key": "Date",
+							"value": "Mon, 20 Jun 2016 06:32:33 GMT",
+							"description": ""
+						}
+					],
+					"cookie": [],
+					"responseTime": 32,
+					"body": "-----BEGIN RSA PRIVATE KEY-----\nMIICXAIBAAKBgQCpfM6Rs6NWRhsHE11908334hsCHu8WdryznEXRuGGpgGGnvQN+\nhu+C5vqLYgm4JXA4QHNzMfnBbp2V8BX7wwXbUNVjvsrL8zbqZ5+GOu2B2H6XdMn5\nW63F/QiiSpgKt558sXEXIOeJsG4X/t44oMer/JmTwUES79MEaMKfxenkVwIDAQAB\nAoGAG0AG0mRIibGB3PRfHsD0J7vBzeh9VmZG1rX0f9CeWytaCCcarbgyQCC0/b4I\nhAP49AJgzY+mcVRAn//W+QCVKzffZmZxr0eML6SLazkwYyW/yTd1GHgLLu2Ksgh+\nXgSjgOpzDCafCW7tguyNhqVmSIJjWdRAICdVaZEMMG+j4akCQQDYTndd7sTgXaf1\nK1sR1Wm9ACvuDO6J0xTPkBqtsvU/c7c+/C5+vJ87pG5Tamwbqg3rYnLZNkdfZKHq\nFLBRDUelAkEAyJbnLtVULm/WY1D4ZI3k47adsLaU3Mutox41wdzV1vqnLR5g4RBP\npavbIiw4UfnItquFsXOep72v6bTS0QGbSwJAOkHv7lGnntI6sVKLBaOYBfps2oGL\nIX3DZh/mv4+qc/uDiCg9kY7VyCeCO183XMARXas3SX9P+8ZLwZLu5fWQrQJAF85h\nDZvf68r2JL9dW4HDoorv2CMzM6kwqGVTd/ifoG4LHT23vb5T1ZO55CpfXMtKWPOu\nYEsaj0nh8Ni3FHseVQJBAIDbFE9+GHXUlMch4nPgwZAF5Vm1Y1j8IWklwa4VnQSZ\nbhxMlNfK7vBAXJv7BvrRvQBL9nXHKmPwLJOLbhIt1Rw=\n-----END RSA PRIVATE KEY-----\n"
+				}
+			]
+		},
+		{
+			"name": "Decrypt Shoe with Shared Key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "var j = JSON.parse(responseBody);\ntests[\"Card 1 exists\"] = j.cards[0].seq === 1;\n\n\npostman.setEnvironmentVariable(\"shareDecryptedCards\", JSON.stringify(j.cards));"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": "// Get the Symmetric/Shared key Initialization vector (IV) and encrypted data from the shoe\nvar shoe = JSON.parse(environment['shoe']);\npostman.setEnvironmentVariable(\"crypted\", shoe.shared.crypted);\npostman.setEnvironmentVariable(\"iv\", shoe.shared.iv);"
+					}
+				}
+			],
+			"request": {
+				"url": "{{apiserver}}/api/decrypt/shared",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sharedSecret\": \"{{sharedSecret}}\",\n    \"iv\": \"{{iv}}\",\n    \"crypted\": \"{{crypted}}\"\n  }"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Deal Card 1 to player3 and player4",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "var j = JSON.parse(responseBody);\n\n\npostman.setEnvironmentVariable(\"card1-player3-crypted\", j.secrets.player3[0]);\npostman.setEnvironmentVariable(\"card1-iv\", j.shared.iv);\npostman.setEnvironmentVariable(\"card1-crypted\", j.shared.crypted);\n\n\n// Shared\nif(j.shared) {\n    tests[\"shared exists\"] = true;    \n} else {\n    tests[\"shared exists\"] = false;\n}\n\n// Shared.iv\nif(j.shared.iv) {\n    tests[\"Shared IV exists\"] = true;    \n} else {\n    tests[\"Shared IV exists\"] = false;\n}\n\n// Shared.crypted\nif(j.shared.crypted) {\n    tests[\"Share encrypted data exists\"] = true;    \n} else {\n    tests[\"Share encrypted data exists\"] = false;\n}\n\n// Secrets\nif(j.secrets) {\n    tests[\"Secrets returned\"] = true;    \n} else {\n    tests[\"Secrets returned\"] = false;\n}\n\n\n// Sigs\nif(j.sig) {\n    tests[\"Shoe is properly signed by FD\"] = true;    \n} else {\n    tests[\"Shoe is properly signed by FD\"] = false;\n}\n"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": "// Get the player1 Private Key\nvar player = JSON.parse(environment['player1']);\npostman.setEnvironmentVariable(\"player1-publicKey\", player.publicKey);\n\nplayer = JSON.parse(environment['player2']);\npostman.setEnvironmentVariable(\"player2-publicKey\", player.publicKey);\n\nplayer = JSON.parse(environment['player3']);\npostman.setEnvironmentVariable(\"player3-publicKey\", player.publicKey);\n\nplayer = JSON.parse(environment['player4']);\npostman.setEnvironmentVariable(\"player4-publicKey\", player.publicKey);\n\n\nvar cards = JSON.parse(environment['shareDecryptedCards']);\nvar card = cards[0];\npostman.setEnvironmentVariable(\"cardSeq\", card.seq);\npostman.setEnvironmentVariable(\"cardIV\", card.iv);\npostman.setEnvironmentVariable(\"cardCrypted\", card.crypted);\n\n"
+					}
+				}
+			],
+			"request": {
+				"url": "{{apiserver}}/api/deal",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"card\": {\n        \"crypted\": \"{{cardCrypted}}\",\n        \"iv\": \"{{cardIV}}\",\n        \"seq\": {{cardSeq}}\n    },\n    \"publicKeys\": [\n    {\n      \"alias\": \"player1\",\n      \"publicKey\": \"{{player1-publicKey}}\"\n    },\n    {\n      \"alias\": \"player2\",\n      \"publicKey\":\"{{player2-publicKey}}\"\n    },\n    {\n      \"alias\": \"player3\",\n      \"publicKey\": \"{{player3-publicKey}}\"\n    },\n    {\n      \"alias\": \"player4\",\n      \"publicKey\": \"{{player4-publicKey}}\"\n    }\n  ],\n    \"encryptFor\": [\"player4\",\"player3\"]\n    \n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "PPK Decrypt the sharedSecret for Player3 card1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "// get JSON response data as variable j\nvar j = JSON.parse(responseBody);\n\nvar sharedSecret = j.decrypted;\n postman.setEnvironmentVariable(\"secret\", sharedSecret);  \n// If there is a decrypted element we use thata s the sharedSecret\nif(sharedSecret) {\n   tests[\"Decrypt sharedSecret\"] = true;\n} else {\n    tests[\"Decrypt sharedSecret\"] = false;    \n}\n\n\n"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": "// Get the player1 Private Key\nvar player = JSON.parse(environment['player3']);\npostman.setEnvironmentVariable(\"player3-privateKey\", player.privateKey);\n\n\n"
+					}
+				}
+			],
+			"request": {
+				"url": "{{apiserver}}/api/demo/ppk/decrypt",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"privateKey\": \"{{player3-privateKey}}\",\n    \"crypted\": \"{{card1-player3-crypted}}\"\n}"
+				},
+				"description": ""
+			},
+			"response": [
+				{
+					"name": "Private key",
+					"originalRequest": {
+						"url": "{{apiserver}}/api/demo/base64/decode",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"string\": \"LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlDWEFJQkFBS0JnUUNwZk02UnM2TldSaHNIRTExOTA4MzM0aHNDSHU4V2RyeXpuRVhSdUdHcGdHR252UU4rCmh1K0M1dnFMWWdtNEpYQTRRSE56TWZuQmJwMlY4Qlg3d3dYYlVOVmp2c3JMOHpicVo1K0dPdTJCMkg2WGRNbjUKVzYzRi9RaWlTcGdLdDU1OHNYRVhJT2VKc0c0WC90NDRvTWVyL0ptVHdVRVM3OU1FYU1LZnhlbmtWd0lEQVFBQgpBb0dBRzBBRzBtUklpYkdCM1BSZkhzRDBKN3ZCemVoOVZtWkcxclgwZjlDZVd5dGFDQ2NhcmJneVFDQzAvYjRJCmhBUDQ5QUpnelkrbWNWUkFuLy9XK1FDVkt6ZmZabVp4cjBlTUw2U0xhemt3WXlXL3lUZDFHSGdMTHUyS3NnaCsKWGdTamdPcHpEQ2FmQ1c3dGd1eU5ocVZtU0lKaldkUkFJQ2RWYVpFTU1HK2o0YWtDUVFEWVRuZGQ3c1RnWGFmMQpLMXNSMVdtOUFDdnVETzZKMHhUUGtCcXRzdlUvYzdjKy9DNSt2Sjg3cEc1VGFtd2JxZzNyWW5MWk5rZGZaS0hxCkZMQlJEVWVsQWtFQXlKYm5MdFZVTG0vV1kxRDRaSTNrNDdhZHNMYVUzTXV0b3g0MXdkelYxdnFuTFI1ZzRSQlAKcGF2YklpdzRVZm5JdHF1RnNYT2VwNzJ2NmJUUzBRR2JTd0pBT2tIdjdsR25udEk2c1ZLTEJhT1lCZnBzMm9HTApJWDNEWmgvbXY0K3FjL3VEaUNnOWtZN1Z5Q2VDTzE4M1hNQVJYYXMzU1g5UCs4Wkx3Wkx1NWZXUXJRSkFGODVoCkRadmY2OHIySkw5ZFc0SERvb3J2MkNNek02a3dxR1ZUZC9pZm9HNExIVDIzdmI1VDFaTzU1Q3BmWE10S1dQT3UKWUVzYWowbmg4TmkzRkhzZVZRSkJBSURiRkU5K0dIWFVsTWNoNG5QZ3daQUY1Vm0xWTFqOElXa2x3YTRWblFTWgpiaHhNbE5mSzd2QkFYSnY3QnZyUnZRQkw5blhIS21Qd0xKT0xiaEl0MVJ3PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=\"\n}"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "html",
+					"_postman_previewtype": "html",
+					"header": [
+						{
+							"name": "Connection",
+							"key": "Connection",
+							"value": "keep-alive",
+							"description": ""
+						},
+						{
+							"name": "Content-Length",
+							"key": "Content-Length",
+							"value": "887",
+							"description": ""
+						},
+						{
+							"name": "Content-Type",
+							"key": "Content-Type",
+							"value": "text/plain; charset=utf-8",
+							"description": ""
+						},
+						{
+							"name": "Date",
+							"key": "Date",
+							"value": "Mon, 20 Jun 2016 06:32:33 GMT",
+							"description": ""
+						}
+					],
+					"cookie": [],
+					"responseTime": 32,
+					"body": "-----BEGIN RSA PRIVATE KEY-----\nMIICXAIBAAKBgQCpfM6Rs6NWRhsHE11908334hsCHu8WdryznEXRuGGpgGGnvQN+\nhu+C5vqLYgm4JXA4QHNzMfnBbp2V8BX7wwXbUNVjvsrL8zbqZ5+GOu2B2H6XdMn5\nW63F/QiiSpgKt558sXEXIOeJsG4X/t44oMer/JmTwUES79MEaMKfxenkVwIDAQAB\nAoGAG0AG0mRIibGB3PRfHsD0J7vBzeh9VmZG1rX0f9CeWytaCCcarbgyQCC0/b4I\nhAP49AJgzY+mcVRAn//W+QCVKzffZmZxr0eML6SLazkwYyW/yTd1GHgLLu2Ksgh+\nXgSjgOpzDCafCW7tguyNhqVmSIJjWdRAICdVaZEMMG+j4akCQQDYTndd7sTgXaf1\nK1sR1Wm9ACvuDO6J0xTPkBqtsvU/c7c+/C5+vJ87pG5Tamwbqg3rYnLZNkdfZKHq\nFLBRDUelAkEAyJbnLtVULm/WY1D4ZI3k47adsLaU3Mutox41wdzV1vqnLR5g4RBP\npavbIiw4UfnItquFsXOep72v6bTS0QGbSwJAOkHv7lGnntI6sVKLBaOYBfps2oGL\nIX3DZh/mv4+qc/uDiCg9kY7VyCeCO183XMARXas3SX9P+8ZLwZLu5fWQrQJAF85h\nDZvf68r2JL9dW4HDoorv2CMzM6kwqGVTd/ifoG4LHT23vb5T1ZO55CpfXMtKWPOu\nYEsaj0nh8Ni3FHseVQJBAIDbFE9+GHXUlMch4nPgwZAF5Vm1Y1j8IWklwa4VnQSZ\nbhxMlNfK7vBAXJv7BvrRvQBL9nXHKmPwLJOLbhIt1Rw=\n-----END RSA PRIVATE KEY-----\n"
+				}
+			]
+		},
+		{
+			"name": "Decrypt Card 1 for player3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "var j = JSON.parse(responseBody);\n"
+					}
+				}
+			],
+			"request": {
+				"url": "{{apiserver}}/api/decrypt/shared",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sharedSecret\": \"{{secret}}\",\n    \"iv\": \"{{card1-iv}}\",\n    \"crypted\": \"{{card1-crypted}}\"\n  }"
+				},
+				"description": "# Take the player3"
+			},
+			"response": []
+		}
+	]
+}
